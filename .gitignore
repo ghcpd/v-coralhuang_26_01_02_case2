@@ -1,0 +1,19 @@
+# Virtual environment
+.venv/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Pytest
+.pytest_cache/
+
+# Editors
+.vscode/
+.idea/
+
+# Packaging
+dist/
+build/
+*.egg-info/

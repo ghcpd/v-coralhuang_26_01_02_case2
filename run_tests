@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+set -euo pipefail
+PYTHON=${PYTHON:-python}
+VENV_DIR=".venv"
+REQ_FILE="requirements.txt"
+
+# create venv if missing
+if [ ! -d "$VENV_DIR" ]; then
+  $PYTHON -m venv "$VENV_DIR"
+fi
+# shellcheck disable=SC1091
+source "$VENV_DIR/bin/activate"
+python -m pip install --upgrade pip
+pip install -r "$REQ_FILE"
+
+# run tests
+PYTHONPATH=src pytest -q
