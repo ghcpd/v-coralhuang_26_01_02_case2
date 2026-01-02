@@ -94,3 +94,15 @@ This task is evaluated on:
 - Engineering completeness
 - Reproducibility
 - Quality of documentation and evidence
+
+## Additional Requirements
+
+Create a `.gitignore` file in the repository root that ignores:
+
+* The virtual environment directory (`.venv/`)
+* Common Python artifacts (`__pycache__/`, `*.py[cod]`, `*$py.class`)
+* Pytest cache (`.pytest_cache/`)
+* Editor directories (`.vscode/`, `.idea/`)
+* Distribution/packaging artifacts (`dist/`, `build/`, `*.egg-info/`)
+
+This ensures the virtual environment and temporary files are not tracked in version control.
