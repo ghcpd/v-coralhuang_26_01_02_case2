@@ -1,0 +1,96 @@
+You are given an incomplete but inferable Python project.
+
+Your objective is to make all tests pass AND meet strict performance targets.
+
+You must treat this as a real engineering task: do not assume success — you must actually run tests and iterate until they pass.
+
+====================
+DELIVERABLES (MANDATORY)
+====================
+
+You must produce the following artifacts in the repository:
+
+1. A one-command test runner script named `run_tests`
+   - It must work from a clean checkout
+   - It must create or reuse an isolated environment (e.g. venv)
+   - It must install dependencies and execute the full test suite
+   - It must fail loudly if anything is wrong
+
+2. A reusable environment setup
+   - Dependency versions must be pinned
+   - Re-running `run_tests` after deleting the environment must still work
+
+3. A README.md containing, at minimum:
+   - How to run the project (exact commands)
+   - A performance comparison table or summary including:
+     * baseline_time_s
+     * optimized_time_s
+     * speedup factor
+     * memory usage (RSS if available)
+   - A brief explanation of:
+     * what was optimized
+     * why it improves performance
+     * how correctness was preserved
+   - Clear notes that make manual evaluation easy for a human reviewer
+
+4. A machine-readable performance report
+   - The benchmark must generate `perf_report.json`
+   - The file must include timing and speedup information
+   - Tests will validate its existence and contents
+
+====================
+HARD CONSTRAINTS
+====================
+
+You are strictly forbidden from modifying:
+- `src/fuzzbench/baseline_impl.py`
+- Anything under `tests/`
+
+You may modify:
+- `src/fuzzbench/impl.py`
+- You may add new modules under `src/fuzzbench/`
+- You may update dependency pinning if required (must remain reproducible)
+
+Correctness constraints:
+- `impl.batch_best_match` must be behaviorally identical to the baseline:
+  * Same output length
+  * `Match.choice` must come from `choices` (or "" if choices is empty)
+  * Scores must match baseline exactly (within floating point tolerance)
+  * Deterministic results for identical inputs
+
+====================
+PERFORMANCE TARGETS (ENFORCED BY TESTS)
+====================
+
+- optimized_time_s <= 0.35 seconds
+- speedup >= 12x relative to the baseline implementation
+- No unreasonable memory regression
+
+You are not allowed to cheat by:
+- Reducing input sizes
+- Skipping or bypassing benchmarks
+- Mocking time or test logic
+- Special-casing test data
+
+====================
+ENGINEERING GOALS
+====================
+
+- Eliminate Python-level O(Q * C * L^2) loops
+- Use RapidFuzz or an equivalent high-performance approach
+- Keep the solution production-quality, readable, and auditable
+
+====================
+PROCESS REQUIREMENTS
+====================
+
+- You must actually execute `run_tests`
+- If tests fail, you must fix the issues and re-run
+- Do not stop until all tests pass and performance gates are met
+
+This task is evaluated on:
+- Correctness
+- Performance
+- Engineering completeness
+- Reproducibility
+- Quality of documentation and evidence
