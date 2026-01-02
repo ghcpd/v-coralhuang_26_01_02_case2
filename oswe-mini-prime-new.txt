@@ -1,0 +1,243 @@
+User: You are given an incomplete but inferable Python project.
+
+Your objective is to make all tests pass AND meet strict performance targets.
+
+You must treat this as a real engineering task: do not assume success — you must actually run tests and iterate until they pass.
+
+====================
+DELIVERABLES (MANDATORY)
+====================
+
+You must produce the following artifacts in the repository:
+
+1. A one-command test runner script named `run_tests`
+   - It must work from a clean checkout
+   - It must create or reuse an isolated environment (e.g. venv)
+   - It must install dependencies and execute the full test suite
+   - It must fail loudly if anything is wrong
+
+2. A reusable environment setup
+   - Dependency versions must be pinned
+   - Re-running `run_tests` after deleting the environment must still work
+
+3. A README.md containing, at minimum:
+   - How to run the project (exact commands)
+   - A performance comparison table or summary including:
+     * baseline_time_s
+     * optimized_time_s
+     * speedup factor
+     * memory usage (RSS if available)
+   - A brief explanation of:
+     * what was optimized
+     * why it improves performance
+     * how correctness was preserved
+   - Clear notes that make manual evaluation easy for a human reviewer
+
+4. A machine-readable performance report
+   - The benchmark must generate `perf_report.json`
+   - The file must include timing and speedup information
+   - Tests will validate its existence and contents
+
+====================
+HARD CONSTRAINTS
+====================
+
+You are strictly forbidden from modifying:
+- `src/fuzzbench/baseline_impl.py`
+- Anything under `tests/`
+
+You may modify:
+- `src/fuzzbench/impl.py`
+- You may add new modules under `src/fuzzbench/`
+- You may update dependency pinning if required (must remain reproducible)
+
+Correctness constraints:
+- `impl.batch_best_match` must be behaviorally identical to the baseline:
+  * Same output length
+  * `Match.choice` must come from `choices` (or "" if choices is empty)
+  * Scores must match baseline exactly (within floating point tolerance)
+  * Deterministic results for identical inputs
+
+====================
+PERFORMANCE TARGETS (ENFORCED BY TESTS)
+====================
+
+- optimized_time_s <= 0.35 seconds
+- speedup >= 12x relative to the baseline implementation
+- No unreasonable memory regression
+
+You are not allowed to cheat by:
+- Reducing input sizes
+- Skipping or bypassing benchmarks
+- Mocking time or test logic
+- Special-casing test data
+
+====================
+ENGINEERING GOALS
+====================
+
+- Eliminate Python-level O(Q * C * L^2) loops
+- Use RapidFuzz or an equivalent high-performance approach
+- Keep the solution production-quality, readable, and auditable
+
+====================
+PROCESS REQUIREMENTS
+====================
+
+- You must actually execute `run_tests`
+- If tests fail, you must fix the issues and re-run
+- Do not stop until all tests pass and performance gates are met
+
+This task is evaluated on:
+- Correctness
+- Performance
+- Engineering completeness
+- Reproducibility
+- Quality of documentation and evidence
+
+## Additional Requirements
+
+Create a `.gitignore` file in the repository root that ignores:
+
+* The virtual environment directory (`.venv/`)
+* Common Python artifacts (`__pycache__/`, `*.py[cod]`, `*$py.class`)
+* Pytest cache (`.pytest_cache/`)
+* Editor directories (`.vscode/`, `.idea/`)
+* Distribution/packaging artifacts (`dist/`, `build/`, `*.egg-info/`)
+
+This ensures the virtual environment and temporary files are not tracked in version control.
+
+GitHub Copilot: Optimizing tool selection...Proceeding to run the test suite to see current failures and benchmarks.
+
+Ran terminal command: pytest -q
+
+Read [](file:///c%3A/Bug_Bash/26_01_02/v-coralhuang_26_01_02_case2/src/fuzzbench/baseline_impl.py)
+
+Read [](file:///c%3A/Bug_Bash/26_01_02/v-coralhuang_26_01_02_case2/src/fuzzbench/impl.py)
+
+Read [](file:///c%3A/Bug_Bash/26_01_02/v-coralhuang_26_01_02_case2/src/fuzzbench/benchmark.py)
+
+Read [](file:///c%3A/Bug_Bash/26_01_02/v-coralhuang_26_01_02_case2/tests/test_correctness.py)
+
+Read [](file:///c%3A/Bug_Bash/26_01_02/v-coralhuang_26_01_02_case2/tests/test_performance.py)
+
+Read [](file:///c%3A/Bug_Bash/26_01_02/v-coralhuang_26_01_02_case2/requirements.txt)
+
+Perfect! I'll implement the optimized `batch_best_match`, add the `run_tests` runner, `.gitignore`, and a README, then run the test suite.
+
+Using "Replace String in File"
+
+
+```
+
+```
+
+
+Created [](file:///c%3A/Bug_Bash/26_01_02/v-coralhuang_26_01_02_case2/run_tests)
+
+Created [](file:///c%3A/Bug_Bash/26_01_02/v-coralhuang_26_01_02_case2/README.md)
+
+Created [](file:///c%3A/Bug_Bash/26_01_02/v-coralhuang_26_01_02_case2/.gitignore)
+
+Ran terminal command: ./run_tests
+
+Ran terminal command: python run_tests
+
+Using "Replace String in File"
+
+
+```
+
+```
+
+
+Created [](file:///c%3A/Bug_Bash/26_01_02/v-coralhuang_26_01_02_case2/setup.cfg)
+
+Ran terminal command: python run_tests
+
+Created [](file:///c%3A/Bug_Bash/26_01_02/v-coralhuang_26_01_02_case2/pyproject.toml)
+
+Ran terminal command: python run_tests
+
+Read [](file:///c%3A/Bug_Bash/26_01_02/v-coralhuang_26_01_02_case2/artifacts/perf_report.json)
+
+Using "Replace String in File"
+
+
+```
+
+```
+Perfect! All tests pass and the benchmark shows optimized_time_s=0.039s and speedup≈660x. My next step is to point you to the README.md and perf_report.json so you can reproduce and verify locally.## ✅ Summary (wrap-up)
+**Perfect!** All tests pass and the benchmark shows `optimized_time_s = 0.039s` and `speedup ≈ 660×`, which satisfies the required targets. Next step: reproduce locally by running run_tests and inspecting perf_report.json.
+
+---
+
+## 🔧 What I changed
+- **Optimized implementation**
+  - File: impl.py  
+    - Replaced the baseline delegation with a fast implementation that uses `rapidfuzz.distance.Levenshtein.distance` to compute edit distances in C and reconstruct the same score formula as the baseline.
+    - Ensures behavioral parity with `baseline_impl.batch_best_match` (same lengths, same choices, same scores within floating tolerance, deterministic).
+- **Test runner**
+  - File: run_tests (one-command runner)
+    - Creates or reuses .venv
+    - Installs pinned dependencies from requirements.txt
+    - Installs the local package in editable mode and runs `pytest -q`
+- **Packaging metadata**
+  - Files: setup.cfg, pyproject.toml — allow editable installation for tests
+- **Docs & housekeeping**
+  - README.md updated with measured performance numbers and instructions
+  - .gitignore added (ignores .venv, caches, editors, build artifacts)
+- **Benchmark output**
+  - perf_report.json is produced by `fuzzbench.benchmark.run_benchmark()` and contains timing & memory data
+
+---
+
+## 📋 How to reproduce (exact commands)
+1. From repo root:
+   - Unix/macOS:
+     - ./run_tests
+   - Windows (cmd / powershell):
+     - python run_tests
+2. Or re-run the benchmark manually:
+   - python -c "from fuzzbench.benchmark import run_benchmark; print(run_benchmark())"
+3. Inspect the machine-readable report:
+   - perf_report.json
+
+---
+
+## 📊 Measured performance (sample run)
+| metric | value |
+|---|---:|
+| **baseline_time_s** | 26.0519289 |
+| **optimized_time_s** | 0.0394378 |
+| **speedup** | 660.58 |
+| **baseline_rss_mb** | 32.988 |
+| **optimized_rss_mb** | 32.992 |
+
+- These numbers come from perf_report.json created by the benchmark used in tests.
+- The implementation meets and far exceeds the enforced targets: `optimized_time_s <= 0.35` and `speedup >= 12`.
+
+---
+
+## 💡 What was optimized and why it is correct
+- The baseline implemented Levenshtein & scoring fully in Python (O(L^2) with Python-level loops).
+- The optimized version uses `rapidfuzz`'s C-accelerated `Levenshtein.distance` to compute the same integer edit distances, then computes the exact same score formula:
+  - (1 - distance / max(len(a), len(b))) * 100.0
+- This preserves correctness (score parity within floating tolerance and same choice selection) while moving the heavy inner loop into native code for large speedups and low memory regression.
+
+---
+
+## Files added/modified
+- Modified: impl.py
+- Added: run_tests, README.md (updated), .gitignore, setup.cfg, pyproject.toml
+- Benchmark output: perf_report.json (created at runtime)
+
+---
+
+If you want, I can:
+- Add a small script to produce more detailed profiling output (flamegraphs, per-call timings), or
+- Run the benchmark on different seeds/sizes and add the results to the README.
+
+Would you like me to add more reproducible benchmarking scripts or provenance logs?
+
+Made changes.
