@@ -1,0 +1,14 @@
+.venv/
+venv/
+# Python artifacts
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.pytest_cache/
+# Editor / OS
+.vscode/
+.idea/
+.DS_Store
+# Benchmark/artifacts
+artifacts/
