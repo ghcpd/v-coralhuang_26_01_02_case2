@@ -1,0 +1,92 @@
+#!/usr/bin/env pwsh
+# run_tests - Test runner script for the fuzzbench project
+# Works from a clean checkout and manages an isolated virtual environment
+
+$ErrorActionPreference = "Stop"
+
+# Configuration
+$VENV_DIR = ".venv"
+$PYTHON_VERSION_MAJOR = 3
+$PYTHON_VERSION_MINOR = 10
+
+# Helper functions
+function Write-Header {
+    param([string]$Text)
+    Write-Host "`n================================`n$Text`n================================" -ForegroundColor Cyan
+}
+
+function Write-Success {
+    param([string]$Text)
+    Write-Host "✓ $Text" -ForegroundColor Green
+}
+
+function Write-Error-Exit {
+    param([string]$Text)
+    Write-Host "✗ $Text" -ForegroundColor Red
+    exit 1
+}
+
+# Check if Python is available
+Write-Header "Checking Python installation"
+$pythonExe = (Get-Command python -ErrorAction SilentlyContinue).Source
+if (-not $pythonExe) {
+    Write-Error-Exit "Python not found. Please install Python 3.10+ and ensure it's in PATH."
+}
+
+$pythonVersion = python --version 2>&1
+Write-Success "Found: $pythonVersion"
+
+# Create or reuse virtual environment
+Write-Header "Setting up virtual environment"
+if (Test-Path $VENV_DIR) {
+    Write-Success "Virtual environment exists at $VENV_DIR"
+} else {
+    Write-Host "Creating new virtual environment at $VENV_DIR..."
+    python -m venv $VENV_DIR
+    if ($LASTEXITCODE -ne 0) {
+        Write-Error-Exit "Failed to create virtual environment"
+    }
+    Write-Success "Virtual environment created"
+}
+
+# Activate virtual environment
+$activateScript = Join-Path $VENV_DIR "Scripts\Activate.ps1"
+if (-not (Test-Path $activateScript)) {
+    Write-Error-Exit "Virtual environment activation script not found at $activateScript"
+}
+
+& $activateScript
+if ($LASTEXITCODE -ne 0) {
+    Write-Error-Exit "Failed to activate virtual environment"
+}
+Write-Success "Virtual environment activated"
+
+# Upgrade pip
+Write-Header "Upgrading pip"
+python -m pip install --upgrade pip setuptools wheel | Out-Null
+if ($LASTEXITCODE -ne 0) {
+    Write-Error-Exit "Failed to upgrade pip"
+}
+Write-Success "pip upgraded"
+
+# Install dependencies
+Write-Header "Installing dependencies"
+if (Test-Path "requirements.txt") {
+    pip install -r requirements.txt
+    if ($LASTEXITCODE -ne 0) {
+        Write-Error-Exit "Failed to install dependencies from requirements.txt"
+    }
+    Write-Success "Dependencies installed from requirements.txt"
+} else {
+    Write-Error-Exit "requirements.txt not found"
+}
+
+# Run tests
+Write-Header "Running test suite"
+pytest -v
+if ($LASTEXITCODE -ne 0) {
+    Write-Error-Exit "Tests failed"
+}
+Write-Success "All tests passed"
+
+Write-Header "Test run completed successfully"
