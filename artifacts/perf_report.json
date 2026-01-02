@@ -1,0 +1,7 @@
+{
+  "baseline_time_s": 27.65742339999997,
+  "optimized_time_s": 0.04447509999954491,
+  "speedup": 621.8630964356005,
+  "baseline_rss_mb": 32.6171875,
+  "optimized_rss_mb": 32.6171875
+}
